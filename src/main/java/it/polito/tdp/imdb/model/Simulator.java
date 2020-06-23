@@ -110,7 +110,7 @@ public class Simulator {
 					Evento nuovoEvento = new Evento(e.getGiorno()+1, dopoPausa, EventType.INTERVISTA);
 					this.queue.add(nuovoEvento);
 					this.eventi.add(nuovoEvento);
-					//return;
+					return;
 				}
 			}
 		}
