@@ -5,8 +5,12 @@
 package it.polito.tdp.imdb;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.imdb.model.Actor;
 import it.polito.tdp.imdb.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -38,7 +42,7 @@ public class FXMLController {
     private ComboBox<String> boxGenere; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxAttore"
-    private ComboBox<?> boxAttore; // Value injected by FXMLLoader
+    private ComboBox<Actor> boxAttore; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtGiorni"
     private TextField txtGiorni; // Value injected by FXMLLoader
@@ -48,12 +52,18 @@ public class FXMLController {
 
     @FXML
     void doAttoriSimili(ActionEvent event) {
-
+    	txtResult.clear();
+    	Actor scelto = this.boxAttore.getValue();
+    	txtResult.appendText("Attori simili a "+scelto.toString()+":\n\n");
+    	List<Actor> simili = new ArrayList<>(this.model.getAttoriSimili(scelto));
+    	for(Actor a : simili) {
+    		txtResult.appendText(a.toString()+"\n");
+    	}
     }
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
-
+    	txtResult.clear();
     	String gScelto;
     	
     	if(this.boxGenere.getValue() != null) {
@@ -61,6 +71,9 @@ public class FXMLController {
     		gScelto = this.boxGenere.getValue();
     		this.model.creaGrafo(gScelto);
     		txtResult.appendText(String.format("GRAFO CREATO CON %d VERTICI E %d ARCHI", this.model.getVertici(), this.model.getArchi()));
+    		List<Actor> lista = new ArrayList<>(this.model.getAllAttoriGrafo());
+    		Collections.sort(lista);
+    		this.boxAttore.getItems().addAll(lista);
     	}
     	else {
     		//Errore, segnalo, ritorno
@@ -71,7 +84,15 @@ public class FXMLController {
 
     @FXML
     void doSimulazione(ActionEvent event) {
-
+    	txtResult.clear();
+    	int g;
+    	try {
+    		g =Integer.parseInt(this.txtGiorni.getText());
+    	}catch(NumberFormatException e) {
+    		txtResult.appendText("INSERIRE UN NUMERO NEL CAMPO GIORNI!");
+    		return;
+    	}
+    	this.model.simula(g);
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
